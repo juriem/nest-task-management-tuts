@@ -1,45 +1,40 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
-import { TasksService } from "./tasks.service";
-import { Task, TaskStatus } from "./task.model";
-import { CreateTaskDto } from "./dto/create-task.dto";
-import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
-import { fromInteropObservable } from "rxjs/internal/observable/innerFrom";
-import { UpdateTaskStatusDto } from "./dto/update-task-status.dto";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { TasksService } from './tasks.service';
+import { Task } from './task.entity';
+import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
+import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 
-@Controller("tasks")
+@Controller('tasks')
 export class TasksController {
-  constructor(private readonly service: TasksService) {
-  }
+  constructor(private readonly service: TasksService) {}
 
   @Get()
-  getTasks(@Query() filterDto: GetTasksFilterDto): Task[] {
-    if (Object.keys(filterDto).length) {
-      return this.service.getTaskWithFilter(filterDto);
-    } else {
-      return this.service.getAllTasks();
-    }
+  getTasks(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
+    return this.service.getTasks(filterDto);
   }
 
-  @Get("/:id")
-  getTaskById(@Param("id") id: string): Task {
+  @Get('/:id')
+  getTaskById(@Param('id') id: string): Promise<Task> {
     return this.service.getTaskById(id);
   }
 
   @Post()
-  createTask(@Body() createTaskDto: CreateTaskDto): Task {
+  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
     return this.service.createTask(createTaskDto);
   }
 
-  @Delete("/:id")
-  deleteTaskById(@Param("id") id: string): Task[] {
-    return this.service.deleteTaskById(id);
+  @Delete('/:id')
+  deleteTaskById(@Param('id') id: string): Promise<void> {
+    this.service.deleteTask(id);
+    return;
   }
 
-  @Patch("/:id/status")
+  @Patch('/:id/status')
   updateTaskStatus(
-    @Param("id") id: string,
-    @Body() updateTaskStatusDto: UpdateTaskStatusDto): Task {
+    @Param('id') id: string,
+    @Body() updateTaskStatusDto: UpdateTaskStatusDto): Promise<Task> {
     const { status } = updateTaskStatusDto;
-    return this.service.updateTaskStatus(id, status);
+    return this.service.updateStatus(id, status);
   }
 }

@@ -1,5 +1,6 @@
-import { Column, Entity, EntityRepository, PrimaryGeneratedColumn, Repository } from 'typeorm';
+import { Column, Entity, EntityRepository, OneToMany, PrimaryGeneratedColumn, Repository } from 'typeorm';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
+import { Task } from '../tasks/task.entity';
 
 @Entity()
 export class User {
@@ -9,6 +10,8 @@ export class User {
   username: string;
   @Column()
   password: string;
+  @OneToMany((_type) => Task, (task) => task.user, { eager: true })
+  tasks: Task[];
 }
 
 @EntityRepository(User)

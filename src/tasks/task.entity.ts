@@ -1,5 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn, Repository } from "typeorm";
-import { TaskStatus } from "./task-status.enum";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Repository } from 'typeorm';
+import { TaskStatus } from './task-status.enum';
+import { User } from '../auth/user.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Task {
@@ -11,4 +13,8 @@ export class Task {
   description: string;
   @Column()
   status: TaskStatus;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  @ManyToOne((_type) => User, (user) => user.tasks, { eager: false })
+  @Exclude({ toPlainOnly: true })
+  user: User;
 }
